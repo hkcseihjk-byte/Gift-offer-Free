@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Bundle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { background: #fff; width: 100%; max-width: 500px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; }
+        #notification-bar { background: #ffeb3b; color: #333; padding: 10px; text-align: center; font-size: 14px; border-radius: 4px; margin-bottom: 15px; display: none; font-weight: bold;}
+        .breadcrumb { font-size: 13px; color: #666; margin-bottom: 15px; display: flex; align-items: center; gap: 5px; }
+        .breadcrumb i { color: #007bff; }
+        .breadcrumb strong { color: #333; font-weight: 600; text-transform: uppercase; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;}
+        .action-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500; transition: 0.2s; border: 1px solid transparent; }
+        .btn i { margin-right: 5px; }
+        .btn-green { background-color: #198754; color: white; }
+        .btn-green:hover { background-color: #157347; }
+        .btn-blue-outline { background: #fff; color: #0d6efd; border-color: #0d6efd; }
+        .btn-blue-outline:hover { background: #0d6efd; color: #fff; }
+        .full-width { width: 100%; }
+        .product-image { text-align: center; margin-top: 10px; position: relative; }
+        .product-image img { width: 100%; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .desc-text { margin-top: 15px; font-size: 14px; color: #555; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="notification-bar"></div>
+
+    <div class="breadcrumb">
+        <i class="fa-solid fa-house"></i> 
+        <span> > Gallery > </span>
+        <strong id="user-title">Loading...</strong>
+    </div>
+
+    <div class="action-buttons">
+        <a href="#" class="btn btn-green"><i class="fa-solid fa-gift"></i> Free Now</a>
+        <a id="user-zoom" href="#" class="btn btn-blue-outline"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</a>
+        
+        <a id="user-download" href="#" class="btn btn-blue-outline full-width">
+            <i class="fa-solid fa-download"></i> Download original image
+        </a>
+
+        <a href="#" class="btn btn-blue-outline"><i class="fa-solid fa-share-nodes"></i> Share</a>
+        </div>
+
+    <div class="product-image">
+        <img id="user-image" src="" alt="Wait for data...">
+    </div>
+    
+    <div id="user-desc" class="desc-text"></div>
+</div>
+
+<script type="module">
+    // আপনার Firebase কনফিগারেশন এখানে বসান
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // TODO: নিচের অংশটি আপনার Firebase Console থেকে কপি করে এখানে বসান
+    const firebaseConfig = {
+  apiKey: "AIzaSyAO5AA5Jb5kgMZQ8dUv1NnG3xEqNAxAhCs",
+  authDomain: "update-3f9c0.firebaseapp.com",
+  databaseURL: "https://update-3f9c0-default-rtdb.firebaseio.com",
+  projectId: "update-3f9c0",
+  storageBucket: "update-3f9c0.firebasestorage.app",
+  messagingSenderId: "339256067632",
+  appId: "1:339256067632:web:05ede89a6a1fc8eb958ff5",
+  measurementId: "G-LKDL3SNJ70"
+};
+
+    // Firebase ইনিশিলাইজ
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // ডাটাবেস থেকে রিয়েলটাইম ডাটা আনা
+    const starCountRef = ref(db, 'websiteData');
+    onValue(starCountRef, (snapshot) => {
+        const data = snapshot.val();
+        
+        if (data) {
+            document.getElementById('user-title').innerText = data.title || "No Title";
+            
+            if(data.image) {
+                document.getElementById('user-image').src = data.image;
+                document.getElementById('user-zoom').href = data.image;
+            }
+
+            if(data.link) document.getElementById('user-download').href = data.link;
+            if(data.desc) document.getElementById('user-desc').innerText = data.desc;
+
+            // নোটিফিকেশন চেক
+            const notifBar = document.getElementById('notification-bar');
+            if (data.notif && data.notif !== "") {
+                notifBar.style.display = 'block';
+                notifBar.innerText = data.notif;
+            } else {
+                notifBar.style.display = 'none';
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
